@@ -1,34 +1,43 @@
-const int n=10;
-const int p=3;
-int n1,n2,n3;
-double val[p][n];
-double tempval[p][n];
-double mean[p];
-double deviation[p];
-double input[] = {1,2,4,5,12,13,14,17,20,34};
+const int n=10,p=3; //n = total number of data points, p = total number of clusters
+int n1=0,n2=0,n3=0; //
+double val[p][n]; //final cluster values
+double tempval[p][n]; //previous cluster values
+double mean[p]; //self explanatory
+double deviation[p]; //difference of a data point from the mean value of the p'th cluster
+double input[] = {1,2,4,5,12,13,14,17,20,34}; //sample input data
+//------------------------
+
     
 void setup()
-{}
+{
+Serial.begin(9600);
+Serial.print("hi");
+}
 
 void loop()
 {
   
     
+    
+    //some of the Serial.println() are added for debugging purposes
+  
+    //-------------------ALGORITHM-----------------------
     for(int i=0; i<p; i++) //setting dummy means as first p elements of input
     mean[i] = input[i];
-    
+    Serial.println("end1");
     int temp = 0;
     boolean flag = false;
-        
     do
     {
       for(int i=0; i<n; i++)
       for(int j=0; j<p; j++)
       {
-        val[i][j] = -1;
+        Serial.println("end2");
+        val[i][j] = -1; //initializing val array with arbit values
       }
-      for(int i=0; i<n; i++) 
+      for(int i=0; i<n; i++) //adding values to cluster (3 in number for this particular case, hence n1,n2,n3)
       {
+        Serial.println("end3");
         temp=clustering(input[i]);
         if(temp==0)
         val[temp][n1++] = input[i];
@@ -39,17 +48,22 @@ void loop()
         if(temp==2)
         val[temp][n3++] = input[i]; 
       }
-      meaningful();
-      flag = terminate();
+      meaningful(); //calculate new means of individual clusters
+      flag = terminate(); //check whether last cluster instance is same as current cluster instance
       
-      if(!flag)
+      if(!flag) //if last,current clusters not same, then initialze last cluster as current cluster
       {
         for(int i=0; i<p; i++)
           for(int j=0; j<n; j++)
             tempval[i][j] = val[i][j];
+        
+        Serial.print("loop_end");
       }
       
-      n1=0, n2=0, n3=0;
+      n1=0;//no idea why i added this
+      n2=0;
+      n3=0;
+      
     }
     while(!flag);
     
@@ -62,12 +76,16 @@ void loop()
       }
        Serial.println();
     }
+    Serial.println("end");
+    delay(2000);
+    //-------------------ALGORITHM END-----------------------
   }
     
      
 
-    int clustering(double a) //allot cluster to individual data point
+    int clustering(double a) //allot cluster to individual data point. Input data point, fn tell you which cluster it belongs to
   {
+    Serial.println("sex1");
     for(int i=0; i<p; i++)
     {
       if(a>mean[i])
@@ -109,7 +127,7 @@ void loop()
     }
   }
   
-  boolean terminate() //terminate the algorithm
+  boolean terminate() //terminate the algorithm. Check whether last and current cluster are same or !
   {
     for(int i=0; i<p; i++)
     {
